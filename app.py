@@ -6,12 +6,85 @@ from keras.models import load_model
 from sklearn.preprocessing import MinMaxScaler
 import datetime
 import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import plotly.express as px
+from plotly.subplots import make_subplots
+import ta
+import time
+from datetime import timedelta
+
+# Configure page
+st.set_page_config(
+    page_title="🚀 Advanced Stock Prediction Hub",
+    page_icon="📈",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# Custom CSS for better styling
+st.markdown("""
+<style>
+    .main-header {
+        font-size: 3rem;
+        font-weight: bold;
+        text-align: center;
+        color: #1f77b4;
+        margin-bottom: 2rem;
+        padding: 1rem;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .metric-card {
+        background-color: #f0f2f6;
+        padding: 1rem;
+        border-radius: 10px;
+        border-left: 5px solid #1f77b4;
+        margin: 0.5rem 0;
+    }
+    .prediction-box {
+        padding: 1rem;
+        border-radius: 10px;
+        margin: 1rem 0;
+        text-align: center;
+        font-weight: bold;
+    }
+    .up-prediction {
+        background-color: #d4edda;
+        border: 2px solid #28a745;
+        color: #155724;
+    }
+    .down-prediction {
+        background-color: #f8d7da;
+        border: 2px solid #dc3545;
+        color: #721c24;
+    }
+    .info-box {
+        background-color: #e7f3ff;
+        padding: 1rem;
+        border-radius: 10px;
+        border-left: 5px solid #007bff;
+        margin: 1rem 0;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+@st.cache_data(ttl=300)  # Cache data for 5 minutes
+def load_models():
+    """Load all ML models with caching"""
+    try:
+        mlp_cls_model = load_model("models/mlp_classification.h5", compile=False)
+        lstm_cls_model = load_model("models/lstm_classification.h5", compile=False)
+        mlp_reg_model = load_model("models/mlp_regression.h5", compile=False)
+        lstm_reg_model = load_model("models/lstm_regression.h5", compile=False)
+        return mlp_cls_model, lstm_cls_model, mlp_reg_model, lstm_reg_model
+    except Exception as e:
+        st.error(f"Error loading models: {str(e)}")
+        return None, None, None, None
 
 # Load models
-mlp_cls_model = load_model("models/mlp_classification.h5", compile=False)
-lstm_cls_model = load_model("models/lstm_classification.h5", compile=False)
-mlp_reg_model = load_model("models/mlp_regression.h5", compile=False)
-lstm_reg_model = load_model("models/lstm_regression.h5", compile=False)
+mlp_cls_model, lstm_cls_model, mlp_reg_model, lstm_reg_model = load_models()
 
 # Preprocess function
 def get_processed_data(ticker):
