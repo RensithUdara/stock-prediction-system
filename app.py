@@ -219,91 +219,21 @@ st.markdown("""
         box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
     }
     
-    /* Enhanced Tab styling with animations */
+    /* Tab styling */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 12px;
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        padding: 8px;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        border: 1px solid #e2e8f0;
-        margin-bottom: 1rem;
+        gap: 8px;
     }
     
     .stTabs [data-baseweb="tab"] {
-        background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
-        color: #475569;
-        font-weight: 600;
-        padding: 12px 20px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        position: relative;
-        overflow: hidden;
-        font-size: 0.95rem;
-    }
-    
-    .stTabs [data-baseweb="tab"]:hover {
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        border-color: #cbd5e0;
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-        color: #334155;
+        background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%);
+        border-radius: 10px;
+        color: #4a5568;
+        font-weight: 500;
     }
     
     .stTabs [aria-selected="true"] {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: 2px solid #667eea;
         color: white;
-        transform: translateY(-3px) scale(1.05);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-        z-index: 10;
-    }
-    
-    .stTabs [aria-selected="true"]:hover {
-        background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
-        transform: translateY(-3px) scale(1.05);
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
-    }
-    
-    /* Add glowing effect for active tab */
-    .stTabs [aria-selected="true"]::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 100%);
-        pointer-events: none;
-        border-radius: 10px;
-    }
-    
-    /* Add subtle animation for tab content */
-    .stTabs [role="tabpanel"] {
-        animation: fadeIn 0.5s ease-in-out;
-        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-        border-radius: 15px;
-        padding: 1.5rem;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        border: 1px solid #e2e8f0;
-        margin-top: 1rem;
-    }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    /* Enhanced section header styling */
-    .section-header {
-        text-align: center;
-        margin: 3rem 0 2rem 0;
-        padding: 2rem;
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-        border-radius: 20px;
-        border: 1px solid rgba(102, 126, 234, 0.1);
     }
     
     /* Metric component styling */
@@ -717,31 +647,10 @@ if all([mlp_cls_model, lstm_cls_model, mlp_reg_model, lstm_reg_model]):
                     avg_change = avg_prediction - current_price
                     st.metric("Average Prediction", f"${avg_prediction:.2f}", f"{avg_change:+.2f}")
                 
-                # Interactive charts with enhanced header
-                st.markdown("""
-                <div class="section-header">
-                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                                -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
-                                background-clip: text; display: inline-block;">
-                        <h2 style="margin: 0; font-size: 2.5rem; font-weight: 700;">
-                            📊 Interactive Visualizations
-                        </h2>
-                    </div>
-                    <p style="color: #666; margin: 1rem 0 0.5rem 0; font-size: 1.2rem;">
-                        Comprehensive technical analysis and prediction charts
-                    </p>
-                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                                height: 4px; width: 200px; margin: 1rem auto; border-radius: 2px;
-                                box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);"></div>
-                </div>
-                """, unsafe_allow_html=True)
+                # Interactive charts
+                st.subheader("📊 Interactive Visualizations")
                 
-                tab1, tab2, tab3, tab4 = st.tabs([
-                    "🕯️ Technical Chart", 
-                    "📈 Predictions", 
-                    "📊 Model Comparison", 
-                    "📋 Analysis Summary"
-                ])
+                tab1, tab2, tab3, tab4 = st.tabs(["🕯️ Technical Chart", "📈 Predictions", "📊 Model Comparison", "📋 Analysis Summary"])
                 
                 with tab1:
                     if show_technical and len(df) > 20:
