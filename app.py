@@ -542,9 +542,28 @@ if all([mlp_cls_model, lstm_cls_model, mlp_reg_model, lstm_reg_model]):
         </div>
         """, unsafe_allow_html=True)
 
-    # Prediction section
+    # Prediction section with enhanced loading
     if st.button("🎯 Generate Predictions", type="primary", use_container_width=True) or st.session_state.get('analyze', False):
-        with st.spinner("🔄 Fetching data and generating AI predictions..."):
+        
+        # Custom loading animation
+        loading_placeholder = st.empty()
+        loading_placeholder.markdown("""
+        <div style="text-align: center; padding: 2rem;">
+            <div style="display: inline-block; animation: spin 2s linear infinite;">
+                🔄
+            </div>
+            <h3 style="color: #667eea; margin: 1rem 0;">AI is analyzing market data...</h3>
+            <p style="color: #666;">Fetching real-time data • Running ML models • Calculating predictions</p>
+        </div>
+        <style>
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        </style>
+        """, unsafe_allow_html=True)
+        
+        with st.spinner(""):
             
             # Process data
             X_cls, X_seq, true_cls, true_price, scaler, df = get_processed_data(ticker, period)
@@ -558,13 +577,24 @@ if all([mlp_cls_model, lstm_cls_model, mlp_reg_model, lstm_reg_model]):
                 
                 current_price = df['Close'].iloc[-1]
                 
+                # Clear loading animation
+                loading_placeholder.empty()
+                
                 # Reset analyze state
                 if 'analyze' in st.session_state:
                     del st.session_state.analyze
                 
+                # Display success message
+                st.success("🎉 Predictions generated successfully!")
+                
                 # Display predictions in an attractive layout
                 st.markdown("---")
-                st.subheader("🎯 AI Predictions Dashboard")
+                st.markdown("""
+                <div style="text-align: center; margin: 2rem 0;">
+                    <h2 style="color: #667eea; margin-bottom: 0.5rem;">🎯 AI Predictions Dashboard</h2>
+                    <p style="color: #666;">Advanced neural network analysis results</p>
+                </div>
+                """, unsafe_allow_html=True)
                 
                 # Price direction predictions
                 col1, col2 = st.columns(2)
@@ -700,6 +730,8 @@ if all([mlp_cls_model, lstm_cls_model, mlp_reg_model, lstm_reg_model]):
                     risk_level = "Low" if risk_score <= 1 else "Medium" if risk_score <= 3 else "High"
                     risk_color = "green" if risk_level == "Low" else "orange" if risk_level == "Medium" else "red"
                     
+                    volatility_text = f"{df.iloc[-1]['Volatility']:.4f}" if len(df) > 20 else "N/A"
+                    
                     st.markdown(f"""
                     ### ⚠️ Risk Assessment
                     
@@ -707,7 +739,7 @@ if all([mlp_cls_model, lstm_cls_model, mlp_reg_model, lstm_reg_model]):
                     
                     **Risk Factors:**
                     - **Beta:** {stock_info['beta']:.2f} (Market sensitivity)
-                    - **Recent Volatility:** {df.iloc[-1]['Volatility']:.4f if len(df) > 20 else 'N/A'}
+                    - **Recent Volatility:** {volatility_text}
                     
                     **Investment Considerations:**
                     - This is for educational purposes only
