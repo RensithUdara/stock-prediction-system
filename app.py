@@ -719,19 +719,20 @@ if all([mlp_cls_model, lstm_cls_model, mlp_reg_model, lstm_reg_model]):
                 
                 # Interactive charts with enhanced header
                 st.markdown("""
-                <div style="text-align: center; margin: 3rem 0 2rem 0;">
+                <div class="section-header">
                     <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
                                 -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
                                 background-clip: text; display: inline-block;">
-                        <h2 style="margin: 0; font-size: 2.2rem; font-weight: 700;">
+                        <h2 style="margin: 0; font-size: 2.5rem; font-weight: 700;">
                             📊 Interactive Visualizations
                         </h2>
                     </div>
-                    <p style="color: #666; margin-top: 0.5rem; font-size: 1.1rem;">
+                    <p style="color: #666; margin: 1rem 0 0.5rem 0; font-size: 1.2rem;">
                         Comprehensive technical analysis and prediction charts
                     </p>
                     <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                                height: 3px; width: 150px; margin: 1rem auto; border-radius: 2px;"></div>
+                                height: 4px; width: 200px; margin: 1rem auto; border-radius: 2px;
+                                box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);"></div>
                 </div>
                 """, unsafe_allow_html=True)
                 
