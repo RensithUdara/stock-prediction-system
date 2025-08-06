@@ -21,51 +21,237 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for better styling
+# Custom CSS for enhanced styling
 st.markdown("""
 <style>
+    /* Import Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    /* Global styling */
+    .main .block-container {
+        padding-top: 2rem;
+        font-family: 'Inter', sans-serif;
+    }
+    
     .main-header {
-        font-size: 3rem;
-        font-weight: bold;
+        font-size: 3.5rem;
+        font-weight: 700;
         text-align: center;
-        color: #1f77b4;
         margin-bottom: 2rem;
-        padding: 1rem;
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem 1rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
+        text-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        font-family: 'Inter', sans-serif;
     }
+    
+    /* Enhanced metric cards with gradients */
     .metric-card {
-        background-color: #f0f2f6;
-        padding: 1rem;
-        border-radius: 10px;
-        border-left: 5px solid #1f77b4;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 15px;
         margin: 0.5rem 0;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+        border: none;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+        overflow: hidden;
     }
+    
+    .metric-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(102, 126, 234, 0.25);
+    }
+    
+    .metric-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+        pointer-events: none;
+    }
+    
+    .metric-card h4 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        opacity: 0.95;
+    }
+    
+    .metric-card p {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+    
+    /* Alternative colorful metric cards */
+    .metric-card-blue {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin: 0.5rem 0;
+        box-shadow: 0 8px 25px rgba(79, 172, 254, 0.15);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .metric-card-green {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin: 0.5rem 0;
+        box-shadow: 0 8px 25px rgba(67, 233, 123, 0.15);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .metric-card-orange {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin: 0.5rem 0;
+        box-shadow: 0 8px 25px rgba(250, 112, 154, 0.15);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .metric-card-purple {
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        color: #2d3748;
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin: 0.5rem 0;
+        box-shadow: 0 8px 25px rgba(168, 237, 234, 0.15);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .metric-card-blue:hover, .metric-card-green:hover, 
+    .metric-card-orange:hover, .metric-card-purple:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+    
+    /* Enhanced prediction boxes */
     .prediction-box {
-        padding: 1rem;
-        border-radius: 10px;
+        padding: 2rem;
+        border-radius: 20px;
         margin: 1rem 0;
         text-align: center;
-        font-weight: bold;
+        font-weight: 600;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+        overflow: hidden;
     }
+    
+    .prediction-box:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+    
     .up-prediction {
-        background-color: #d4edda;
-        border: 2px solid #28a745;
-        color: #155724;
+        background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        color: white;
+        border: none;
     }
+    
     .down-prediction {
-        background-color: #f8d7da;
-        border: 2px solid #dc3545;
-        color: #721c24;
+        background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+        color: white;
+        border: none;
     }
+    
+    .prediction-box h3 {
+        margin: 0 0 1rem 0;
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+    
+    .prediction-box h2 {
+        margin: 0 0 1rem 0;
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+    
+    /* Enhanced info box */
     .info-box {
-        background-color: #e7f3ff;
-        padding: 1rem;
-        border-radius: 10px;
-        border-left: 5px solid #007bff;
+        background: linear-gradient(135deg, #e6fffa 0%, #b2f5ea 100%);
+        color: #234e52;
+        padding: 2rem;
+        border-radius: 15px;
+        border: none;
         margin: 1rem 0;
+        box-shadow: 0 8px 25px rgba(45, 55, 72, 0.08);
+        border-left: 5px solid #38b2ac;
+    }
+    
+    .info-box h4 {
+        color: #2c7a7b;
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+    
+    /* Sidebar styling */
+    .css-1d391kg {
+        background: linear-gradient(180deg, #f7fafc 0%, #edf2f7 100%);
+    }
+    
+    /* Button enhancements */
+    .stButton > button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+    }
+    
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+    
+    /* Tab styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%);
+        border-radius: 10px;
+        color: #4a5568;
+        font-weight: 500;
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    /* Metric component styling */
+    [data-testid="metric-container"] {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        border: 1px solid #e2e8f0;
+        padding: 1rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    
+    /* Footer styling */
+    .footer {
+        background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-top: 3rem;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -238,8 +424,16 @@ def create_prediction_charts(pred_cls_mlp, pred_cls_lstm, pred_reg_mlp, pred_reg
     
     return fig_cls, fig_price
 
-# Main App UI
-st.markdown('<h1 class="main-header">🚀 Advanced Stock Prediction Hub</h1>', unsafe_allow_html=True)
+# Main App UI with enhanced header
+st.markdown("""
+<div style="text-align: center; margin-bottom: 2rem;">
+    <h1 class="main-header">🚀 Advanced Stock Prediction Hub</h1>
+    <p style="font-size: 1.2rem; color: #666; margin-top: -1rem;">
+        AI-Powered Stock Analysis & Price Prediction Platform
+    </p>
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 4px; width: 200px; margin: 1rem auto; border-radius: 2px;"></div>
+</div>
+""", unsafe_allow_html=True)
 
 # Sidebar for controls
 with st.sidebar:
@@ -307,40 +501,44 @@ if all([mlp_cls_model, lstm_cls_model, mlp_reg_model, lstm_reg_model]):
     # Get stock information
     stock_info = get_stock_info(ticker)
     
-    # Display stock information cards
+    # Display enhanced stock information cards
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
         st.markdown(f"""
-        <div class="metric-card">
-            <h4>🏢 {stock_info['name']}</h4>
-            <p><strong>Sector:</strong> {stock_info['sector']}</p>
+        <div class="metric-card-blue">
+            <h4>🏢 Company Info</h4>
+            <p><strong>{stock_info['name'][:25]}{'...' if len(stock_info['name']) > 25 else ''}</strong></p>
+            <p>Sector: {stock_info['sector']}</p>
         </div>
         """, unsafe_allow_html=True)
     
     with col2:
         market_cap_b = stock_info['market_cap'] / 1e9 if stock_info['market_cap'] else 0
         st.markdown(f"""
-        <div class="metric-card">
+        <div class="metric-card-green">
             <h4>💰 Market Cap</h4>
             <p><strong>${market_cap_b:.1f}B</strong></p>
+            <p>Beta: {stock_info['beta']:.2f}</p>
         </div>
         """, unsafe_allow_html=True)
     
     with col3:
         st.markdown(f"""
-        <div class="metric-card">
-            <h4>📊 P/E Ratio</h4>
-            <p><strong>{stock_info['pe_ratio']:.2f}</strong></p>
+        <div class="metric-card-orange">
+            <h4>📊 Valuation</h4>
+            <p><strong>P/E: {stock_info['pe_ratio']:.2f}</strong></p>
+            <p>Current: ${stock_info['current_price']:.2f}</p>
         </div>
         """, unsafe_allow_html=True)
     
     with col4:
         dividend_pct = (stock_info['dividend_yield'] * 100) if stock_info['dividend_yield'] else 0
         st.markdown(f"""
-        <div class="metric-card">
-            <h4>💵 Dividend Yield</h4>
+        <div class="metric-card-purple">
+            <h4>💵 Dividend</h4>
             <p><strong>{dividend_pct:.2f}%</strong></p>
+            <p>Yield Rate</p>
         </div>
         """, unsafe_allow_html=True)
 
@@ -523,12 +721,24 @@ if all([mlp_cls_model, lstm_cls_model, mlp_reg_model, lstm_reg_model]):
 else:
     st.error("❌ Models could not be loaded. Please check that the model files exist in the 'models/' directory.")
 
-# Footer
+# Enhanced Footer
 st.markdown("---")
 st.markdown("""
-<div style="text-align: center; color: #666; padding: 2rem;">
-    <p>🚀 <strong>Advanced Stock Prediction Hub</strong> | Built with ❤️ using Streamlit & AI</p>
-    <p>⚠️ <em>This tool is for educational purposes only. Not financial advice.</em></p>
-    <p>📊 Data powered by Yahoo Finance | 🤖 AI Models: MLP & LSTM Neural Networks</p>
+<div class="footer">
+    <div style="text-align: center;">
+        <h3>🚀 <strong>Advanced Stock Prediction Hub</strong></h3>
+        <p style="font-size: 1.1rem; margin: 1rem 0;">Built with ❤️ using Streamlit & AI Neural Networks</p>
+        <div style="display: flex; justify-content: center; gap: 2rem; margin: 1.5rem 0;">
+            <div>📊 <strong>Data Source:</strong> Yahoo Finance</div>
+            <div>🤖 <strong>AI Models:</strong> MLP & LSTM</div>
+            <div>📈 <strong>Technical Analysis:</strong> Advanced Indicators</div>
+        </div>
+        <p style="color: #ffd700; font-weight: 600; font-size: 1rem;">
+            ⚠️ This tool is for educational purposes only. Not financial advice.
+        </p>
+        <p style="opacity: 0.8; margin-top: 1rem;">
+            Always consult with a qualified financial advisor before making investment decisions.
+        </p>
+    </div>
 </div>
 """, unsafe_allow_html=True)
