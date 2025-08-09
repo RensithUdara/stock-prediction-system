@@ -34,6 +34,14 @@ A sophisticated AI-powered stock prediction platform that combines machine learn
 - **Custom Ticker Support**: Search and analyze any publicly traded stock
 - **Real-time Metrics**: Market cap, P/E ratio, dividend yield, beta, and more
 
+### 🤖 Automated Update System
+- **Auto-Updates**: Automatic data refresh every 15 minutes
+- **Git Integration**: Automatic commits with update timestamps
+- **Data Monitoring**: Real-time tracking of 15+ popular stocks
+- **Timestamp Tracking**: README updates with last refresh time
+- **Logging System**: Comprehensive update logs and status tracking
+- **Cross-Platform**: Windows batch and PowerShell scripts included
+
 ## 🛠️ Technology Stack
 
 | Component | Technology | Purpose |
@@ -127,6 +135,71 @@ stock-prediction-system/
     ├── screenshots/               # Application screenshots
     └── diagrams/                  # Architecture diagrams
 ```
+
+## 🤖 Automated Update System
+
+The Stock Prediction Hub includes a sophisticated auto-update system that keeps your data fresh and your repository up-to-date.
+
+### ⚙️ Setup Auto-Updates
+
+#### Windows Users
+```bash
+# Method 1: Using PowerShell (Recommended)
+.\auto_updater.ps1
+
+# Method 2: Using Batch Script
+start_updater.bat
+
+# Method 3: Direct Python
+python auto_updater.py
+```
+
+#### Linux/Mac Users
+```bash
+# Install dependencies
+pip install schedule
+
+# Run auto-updater
+python auto_updater.py
+```
+
+### 🔄 Auto-Update Features
+
+- **📅 Scheduled Updates**: Runs every 15 minutes automatically
+- **📊 Market Data**: Fetches latest data for 15+ popular stocks
+- **📝 Git Commits**: Automatically commits changes with timestamps
+- **🕒 README Updates**: Updates last refresh time in README.md
+- **📋 Logging**: Comprehensive logs of all update activities
+- **⚡ Real-time Status**: Monitor system status and performance
+
+### 🎛️ Control Panel Options
+
+1. **🚀 Start Auto-Updater**: Begin continuous 15-minute updates
+2. **🔄 Single Update**: Run one update cycle manually
+3. **🛑 Stop Auto-Updater**: Stop all auto-update processes
+4. **📋 View Logs**: Check update history and status
+5. **📊 System Status**: Monitor data freshness and Git status
+6. **⚙️ Install Dependencies**: Automatically install required packages
+7. **🔧 Git Setup**: Configure Git credentials and repository
+
+### 📁 Auto-Update File Structure
+
+```
+├── auto_updater.py         # Main Python auto-updater script
+├── auto_updater.ps1        # PowerShell control script
+├── start_updater.bat       # Windows batch control script
+├── data/
+│   └── latest_market_data.csv  # Auto-generated market data
+├── update_log.txt          # Update history log
+└── auto_updater.log        # Detailed system logs
+```
+
+## 🕒 Last Updated
+**Last Data Update**: 2025-08-09 11:48:54 UTC
+**Auto-Update Frequency**: Every 15 minutes
+**Update Status**: ✅ Active
+
+---
 
 ## 🎯 How to Use
 
