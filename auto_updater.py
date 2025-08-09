@@ -15,39 +15,16 @@ import pandas as pd
 import logging
 from pathlib import Path
 
-# Setup logging with safe Unicode handling
-class SafeFormatter(logging.Formatter):
-    def format(self, record):
-        # Replace emojis with safe alternatives for Windows
-        safe_msg = record.getMessage()
-        emoji_map = {
-            '🔄': '[UPDATE]',
-            '🚀': '[START]',
-            '✅': '[OK]',
-            '❌': '[ERROR]',
-            '⚠️': '[WARNING]',
-            '🔍': '[INFO]',
-            '🔀': '[MERGE]',
-            '📝': '[LOG]',
-            '🎯': '[TARGET]'
-        }
-        for emoji, replacement in emoji_map.items():
-            safe_msg = safe_msg.replace(emoji, replacement)
-        record.msg = safe_msg
-        return super().format(record)
 
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('auto_updater.log', encoding='utf-8'),
+
         logging.StreamHandler(sys.stdout)
     ]
 )
 
-# Apply safe formatter to all handlers
-for handler in logging.getLogger().handlers:
-    handler.setFormatter(SafeFormatter('%(asctime)s - %(levelname)s - %(message)s'))
 
 class AutoUpdater:
     def __init__(self, project_path=None):
@@ -231,14 +208,7 @@ class AutoUpdater:
         try:
             os.chdir(self.project_path)
             
-            # Clean up log file to prevent conflicts
-            if os.path.exists('auto_updater.log'):
-                try:
-                    os.remove('auto_updater.log')
-                    logging.info("🔄 Cleaned up log file before merge")
-                except:
-                    logging.warning("⚠️ Could not remove log file, continuing...")
-            
+
             # Get current branch
             current_branch_result = subprocess.run(['git', 'branch', '--show-current'], 
                                                  capture_output=True, text=True, shell=True)
