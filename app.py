@@ -11,7 +11,6 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 import ta
 import time
-import os
 from datetime import timedelta
 
 # Configure page
@@ -362,18 +361,6 @@ def get_stock_info(ticker):
     except:
         return {'name': ticker, 'sector': 'N/A', 'market_cap': 0, 'pe_ratio': 0, 'dividend_yield': 0, 'beta': 0, 'current_price': 0}
 
-def get_last_update_time():
-    """Get the last update time from the auto-updater data"""
-    try:
-        data_file = os.path.join(os.getcwd(), 'data', 'latest_market_data.csv')
-        if os.path.exists(data_file):
-            mod_time = os.path.getmtime(data_file)
-            return datetime.datetime.fromtimestamp(mod_time).strftime("%Y-%m-%d %H:%M:%S")
-        else:
-            return "No auto-update data available"
-    except:
-        return "Unknown"
-
 def create_candlestick_chart(df, ticker):
     """Create interactive candlestick chart with technical indicators"""
     fig = make_subplots(
@@ -470,14 +457,6 @@ st.markdown("""
         AI-Powered Stock Analysis & Price Prediction Platform
     </p>
     <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 4px; width: 200px; margin: 1rem auto; border-radius: 2px;"></div>
-</div>
-""", unsafe_allow_html=True)
-
-# Display last update time
-last_update = get_last_update_time()
-st.markdown(f"""
-<div style="text-align: center; margin: 1rem 0; padding: 0.5rem; background: linear-gradient(135deg, #e6fffa 0%, #b2f5ea 100%); border-radius: 10px;">
-    <small>🕒 <strong>Last Data Update:</strong> {last_update} | 🤖 <strong>Auto-Updates:</strong> Every 15 minutes</small>
 </div>
 """, unsafe_allow_html=True)
 
