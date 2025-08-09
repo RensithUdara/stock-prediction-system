@@ -13,6 +13,8 @@ import schedule
 import yfinance as yf
 import pandas as pd
 import logging
+import socket
+import requests
 from pathlib import Path
 
 
@@ -41,10 +43,30 @@ class AutoUpdater:
             'AAPL', 'TSLA', 'GOOG', 'MSFT', 'AMZN', 'NVDA', 'META',
             'JPM', 'BAC', 'WFC', 'GS', 'WMT', 'KO', 'PG', 'JNJ'
         ]
-        
-    def fetch_latest_data(self):
-        """Fetch latest stock data for monitoring"""
+    
+    def check_internet_connection(self):
+        """Check if internet connection is available"""
         try:
+            # Try to connect to Google DNS
+            socket.create_connection(("8.8.8.8", 53), timeout=3)
+            return True
+        except OSError:
+            try:
+                # Fallback: try to reach Yahoo Finance
+                response = requests.get("https://finance.yahoo.com", timeout=5)
+                return response.status_code == 200
+            except:
+                return False
+    
+    def fetch_latest_data(self):
+        """Fetch latest stock data for monitoring with offline handling"""
+        try:
+            # Check internet connection first
+            if not self.check_internet_connection():
+                logging.warning("⚠️ No internet connection - skipping data fetch")
+                logging.info("📱 Using existing cached data")
+                return True  # Return True to continue with other operations
+            
             logging.info("🔄 Fetching latest market data...")
             
             market_data = []
@@ -164,7 +186,7 @@ class AutoUpdater:
             logging.error(f"❌ Error writing to log file: {str(e)}")
     
     def git_commit_changes(self):
-        """Commit changes to Git repository"""
+        """Commit changes to Git repository with offline handling"""
         try:
             os.chdir(self.project_path)
             
@@ -187,13 +209,20 @@ class AutoUpdater:
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             commit_message = f"🤖 Auto-update: Market data refresh - {timestamp}"
             
-            # Commit changes
+            # Commit changes (local commit always works)
             subprocess.run(['git', 'commit', '-m', commit_message], check=True, shell=True)
+            logging.info("✅ Changes committed locally")
             
-            # Push changes to current branch
-            subprocess.run(['git', 'push', 'origin', 'HEAD'], check=True, shell=True)
+            # Try to push only if internet is available
+            if self.check_internet_connection():
+                try:
+                    subprocess.run(['git', 'push', 'origin', 'HEAD'], check=True, shell=True)
+                    logging.info("✅ Changes pushed to remote repository")
+                except subprocess.CalledProcessError:
+                    logging.warning("⚠️ Failed to push to remote - changes saved locally")
+            else:
+                logging.warning("⚠️ No internet - changes saved locally only")
             
-            logging.info("✅ Changes committed to Git")
             return True
             
         except subprocess.CalledProcessError as e:
@@ -204,10 +233,23 @@ class AutoUpdater:
             return False
     
     def merge_to_main_branch(self):
-        """Automatically merge dev-rensith branch to main branch"""
+        """Automatically merge dev-rensith branch to main branch with offline handling"""
         try:
+            # Skip merge if no internet connection
+            if not self.check_internet_connection():
+                logging.warning("⚠️ No internet connection - skipping branch merge")
+                logging.info("📱 Local commits will be synced when internet returns")
+                return True
+            
             os.chdir(self.project_path)
             
+            # Clean up log file to prevent conflicts
+            if os.path.exists('auto_updater.log'):
+                try:
+                    os.remove('auto_updater.log')
+                    logging.info("🔄 Cleaned up log file before merge")
+                except:
+                    logging.warning("⚠️ Could not remove log file, continuing...")
 
             # Get current branch
             current_branch_result = subprocess.run(['git', 'branch', '--show-current'], 
@@ -289,14 +331,17 @@ class AutoUpdater:
             return False
     
     def run_update_cycle(self):
-        """Run complete update cycle"""
+        """Run complete update cycle with connectivity awareness"""
         try:
-            logging.info("🚀 Starting auto-update cycle...")
+            # Check internet connection status
+            is_online = self.check_internet_connection()
+            status_msg = "🌐 ONLINE" if is_online else "📱 OFFLINE"
+            logging.info(f"🚀 Starting auto-update cycle... {status_msg}")
             
-            # Step 1: Fetch latest data
+            # Step 1: Fetch latest data (or use cached if offline)
             data_success = self.fetch_latest_data()
             
-            # Step 2: Update README timestamp
+            # Step 2: Update README timestamp (always works offline)
             readme_success = self.update_readme_timestamp()
             
             # Step 3: Commit to Git if any updates were successful
@@ -305,18 +350,25 @@ class AutoUpdater:
             else:
                 git_success = False
             
-            # Step 4: Merge to main branch if commit was successful
-            merge_success = True  # Default to True in case we skip merging
-            if git_success:
+            # Step 4: Merge to main branch if commit was successful and online
+            if git_success and is_online:
                 merge_success = self.merge_to_main_branch()
+            else:
+                merge_success = True  # Skip merge but don't fail the cycle
+                if not is_online:
+                    logging.info("📱 Offline mode - skipping branch merge")
             
             # Step 5: Log the update
             overall_success = data_success and readme_success and git_success and merge_success
             self.log_update(overall_success)
             
             if overall_success:
-                logging.info("✅ Complete auto-update cycle finished successfully")
-                logging.info("📊 Data updated → README updated → Git committed → Merged to main")
+                status = "🌐 ONLINE" if is_online else "📱 OFFLINE"
+                logging.info(f"✅ Complete auto-update cycle finished successfully ({status})")
+                if is_online:
+                    logging.info("📊 Data updated → README updated → Git committed → Merged to main")
+                else:
+                    logging.info("📊 README updated → Local Git commit → Ready for sync when online")
             else:
                 logging.warning("⚠️ Auto-update cycle completed with some failures")
                 if not data_success:
