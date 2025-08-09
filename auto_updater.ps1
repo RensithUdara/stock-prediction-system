@@ -15,6 +15,7 @@ Clear-Host
 function Show-Banner {
     Write-Host "===========================================" -ForegroundColor Cyan
     Write-Host "   🚀 Stock Prediction Hub Auto-Updater   " -ForegroundColor Yellow
+    Write-Host "   🔀 Enhanced with Auto-Branch Merging   " -ForegroundColor Green
     Write-Host "===========================================" -ForegroundColor Cyan
     Write-Host ""
 }
@@ -130,14 +131,35 @@ function Show-SystemStatus {
         Write-Host "❌ No update log found" -ForegroundColor Red
     }
     
-    # Check Git status
+    # Check Git status and branch info
     try {
-        $gitStatus = & git status --porcelain 2>$null
+        $currentBranch = & git branch --show-current 2>$null
         if ($LASTEXITCODE -eq 0) {
+            Write-Host "✅ Git: Current branch: $currentBranch" -ForegroundColor Green
+            
+            $gitStatus = & git status --porcelain 2>$null
             if ($gitStatus) {
                 Write-Host "⚠️  Git: Uncommitted changes found" -ForegroundColor Yellow
             } else {
                 Write-Host "✅ Git: Working directory clean" -ForegroundColor Green
+            }
+            
+            # Check if main branch is up to date with dev-rensith
+            if ($currentBranch -eq "dev-rensith") {
+                try {
+                    $behindCount = & git rev-list --count HEAD..origin/main 2>$null
+                    $aheadCount = & git rev-list --count origin/main..HEAD 2>$null
+                    
+                    if ($aheadCount -gt 0) {
+                        Write-Host "🔀 Branch Status: dev-rensith is $aheadCount commits ahead of main" -ForegroundColor Yellow
+                        Write-Host "📝 Next auto-merge will sync these changes to main" -ForegroundColor Cyan
+                    } else {
+                        Write-Host "✅ Branch Status: dev-rensith and main are synchronized" -ForegroundColor Green
+                    }
+                }
+                catch {
+                    Write-Host "ℹ️  Branch comparison: Unable to check sync status" -ForegroundColor Yellow
+                }
             }
         } else {
             Write-Host "❌ Git: Not a git repository or git not installed" -ForegroundColor Red
@@ -146,6 +168,14 @@ function Show-SystemStatus {
     catch {
         Write-Host "❌ Git: Error checking status" -ForegroundColor Red
     }
+    
+    # Check auto-merge functionality
+    Write-Host ""
+    Write-Host "🔀 Auto-Merge Configuration:" -ForegroundColor Cyan
+    Write-Host "   Source Branch: dev-rensith" -ForegroundColor White
+    Write-Host "   Target Branch: main" -ForegroundColor White
+    Write-Host "   Frequency: Every 15 minutes (with data updates)" -ForegroundColor White
+    Write-Host "   Type: Non-fast-forward merge with commit message" -ForegroundColor White
     
     Write-Host "=" * 50 -ForegroundColor Cyan
     Write-Host ""

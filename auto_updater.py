@@ -189,8 +189,8 @@ class AutoUpdater:
             # Commit changes
             subprocess.run(['git', 'commit', '-m', commit_message], check=True, shell=True)
             
-            # Push changes (optional - uncomment if you want auto-push)
-            # subprocess.run(['git', 'push'], check=True, shell=True)
+            # Push changes to current branch
+            subprocess.run(['git', 'push', 'origin', 'HEAD'], check=True, shell=True)
             
             logging.info("✅ Changes committed to Git")
             return True
@@ -200,6 +200,90 @@ class AutoUpdater:
             return False
         except Exception as e:
             logging.error(f"❌ Error in git operations: {str(e)}")
+            return False
+    
+    def merge_to_main_branch(self):
+        """Automatically merge dev-rensith branch to main branch"""
+        try:
+            os.chdir(self.project_path)
+            
+            # Get current branch
+            current_branch_result = subprocess.run(['git', 'branch', '--show-current'], 
+                                                 capture_output=True, text=True, shell=True)
+            
+            if current_branch_result.returncode != 0:
+                logging.error("❌ Failed to get current branch")
+                return False
+            
+            current_branch = current_branch_result.stdout.strip()
+            logging.info(f"🔍 Current branch: {current_branch}")
+            
+            # If we're not on dev-rensith, skip merge
+            if current_branch != 'dev-rensith':
+                logging.info(f"ℹ️ Not on dev-rensith branch, skipping merge")
+                return True
+            
+            # Fetch latest changes from origin
+            subprocess.run(['git', 'fetch', 'origin'], check=True, shell=True)
+            
+            # Check if main branch exists
+            branch_check = subprocess.run(['git', 'show-ref', '--verify', '--quiet', 'refs/heads/main'], 
+                                        capture_output=True, shell=True)
+            
+            if branch_check.returncode != 0:
+                logging.info("📝 Main branch doesn't exist locally, creating it...")
+                subprocess.run(['git', 'checkout', '-b', 'main', 'origin/main'], check=True, shell=True)
+                subprocess.run(['git', 'checkout', 'dev-rensith'], check=True, shell=True)
+            
+            # Switch to main branch
+            logging.info("🔄 Switching to main branch...")
+            subprocess.run(['git', 'checkout', 'main'], check=True, shell=True)
+            
+            # Pull latest changes from main
+            subprocess.run(['git', 'pull', 'origin', 'main'], check=True, shell=True)
+            
+            # Merge dev-rensith into main
+            logging.info("🔀 Merging dev-rensith into main...")
+            merge_result = subprocess.run(['git', 'merge', 'dev-rensith', '--no-ff', '-m', 
+                                         f"🚀 Auto-merge: dev-rensith to main - {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"], 
+                                        capture_output=True, text=True, shell=True)
+            
+            if merge_result.returncode != 0:
+                if "Already up to date" in merge_result.stdout:
+                    logging.info("✅ Main branch already up to date with dev-rensith")
+                else:
+                    logging.error(f"❌ Merge failed: {merge_result.stderr}")
+                    # Switch back to dev-rensith
+                    subprocess.run(['git', 'checkout', 'dev-rensith'], shell=True)
+                    return False
+            else:
+                logging.info("✅ Successfully merged dev-rensith into main")
+                
+                # Push merged changes to main
+                push_result = subprocess.run(['git', 'push', 'origin', 'main'], 
+                                           capture_output=True, text=True, shell=True)
+                
+                if push_result.returncode == 0:
+                    logging.info("✅ Successfully pushed merged changes to origin/main")
+                else:
+                    logging.warning(f"⚠️ Failed to push to origin/main: {push_result.stderr}")
+            
+            # Switch back to dev-rensith
+            subprocess.run(['git', 'checkout', 'dev-rensith'], check=True, shell=True)
+            logging.info("🔄 Switched back to dev-rensith branch")
+            
+            return True
+            
+        except subprocess.CalledProcessError as e:
+            logging.error(f"❌ Git merge operation failed: {str(e)}")
+            # Try to switch back to dev-rensith if something went wrong
+            try:
+                subprocess.run(['git', 'checkout', 'dev-rensith'], shell=True)
+            except:
+                pass
+            return False
+        except Exception as e:
+            logging.error(f"❌ Error in branch merge: {str(e)}")
             return False
     
     def run_update_cycle(self):
@@ -219,14 +303,28 @@ class AutoUpdater:
             else:
                 git_success = False
             
-            # Step 4: Log the update
-            overall_success = data_success and readme_success
+            # Step 4: Merge to main branch if commit was successful
+            merge_success = True  # Default to True in case we skip merging
+            if git_success:
+                merge_success = self.merge_to_main_branch()
+            
+            # Step 5: Log the update
+            overall_success = data_success and readme_success and git_success and merge_success
             self.log_update(overall_success)
             
             if overall_success:
-                logging.info("✅ Auto-update cycle completed successfully")
+                logging.info("✅ Complete auto-update cycle finished successfully")
+                logging.info("📊 Data updated → README updated → Git committed → Merged to main")
             else:
                 logging.warning("⚠️ Auto-update cycle completed with some failures")
+                if not data_success:
+                    logging.warning("  - Data fetch failed")
+                if not readme_success:
+                    logging.warning("  - README update failed")
+                if not git_success:
+                    logging.warning("  - Git commit failed")
+                if not merge_success:
+                    logging.warning("  - Branch merge failed")
                 
             return overall_success
             
@@ -237,15 +335,17 @@ class AutoUpdater:
     
     def start_scheduler(self):
         """Start the scheduled auto-updater"""
-        logging.info("🤖 Starting Auto-Updater Scheduler...")
+        logging.info("🤖 Starting Enhanced Auto-Updater Scheduler...")
         logging.info("📅 Schedule: Every 15 minutes")
         logging.info("🎯 Monitoring stocks: " + ", ".join(self.stocks))
+        logging.info("🔀 Auto-merge: dev-rensith → main branch")
+        logging.info("📝 Features: Data update → README update → Git commit → Branch merge")
         
         # Schedule the update every 15 minutes
         schedule.every(15).minutes.do(self.run_update_cycle)
         
         # Run initial update
-        logging.info("🔄 Running initial update...")
+        logging.info("🔄 Running initial update cycle...")
         self.run_update_cycle()
         
         # Keep the scheduler running
