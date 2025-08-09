@@ -26,5 +26,10 @@ requests>=2.31.0
 datetime
 pillow>=10.0.0
 
+# Auto-Update System
+schedule>=1.2.0
+pathlib
+logging
+
 # Optional Performance Libraries
 numba>=0.57.0
