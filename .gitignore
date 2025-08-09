@@ -35,7 +35,6 @@ env.bak/
 venv.bak/
 
 # IDE
-.vscode/
 .idea/
 *.swp
 *.swo
@@ -46,3 +45,5 @@ Thumbs.db
 
 # Data files (temporary)
 temp_*.csv
+config.bat
+node_modules
