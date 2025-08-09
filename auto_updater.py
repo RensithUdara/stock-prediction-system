@@ -15,15 +15,16 @@ import pandas as pd
 import logging
 from pathlib import Path
 
-# Setup logging
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('auto_updater.log'),
+
         logging.StreamHandler(sys.stdout)
     ]
 )
+
 
 class AutoUpdater:
     def __init__(self, project_path=None):
@@ -207,6 +208,7 @@ class AutoUpdater:
         try:
             os.chdir(self.project_path)
             
+
             # Get current branch
             current_branch_result = subprocess.run(['git', 'branch', '--show-current'], 
                                                  capture_output=True, text=True, shell=True)
