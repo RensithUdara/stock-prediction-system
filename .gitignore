@@ -47,3 +47,7 @@ Thumbs.db
 temp_*.csv
 node_modules
 .vscode/
+.env
+.env.*
+.env.local
+.env.production
