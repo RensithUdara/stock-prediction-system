@@ -45,5 +45,5 @@ Thumbs.db
 
 # Data files (temporary)
 temp_*.csv
-config.bat
 node_modules
+.vscode/
