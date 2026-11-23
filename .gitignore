@@ -46,4 +46,7 @@ Thumbs.db
 # Data files (temporary)
 temp_*.csv
 node_modules
-config.bat
+.env
+.env.*
+.env.local
+.env.production

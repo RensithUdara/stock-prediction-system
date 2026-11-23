@@ -1,4 +1,3 @@
-import utils.session
 import streamlit as st
 import yfinance as yf
 import numpy as np
