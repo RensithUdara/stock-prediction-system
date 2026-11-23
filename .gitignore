@@ -41,4 +41,7 @@ venv.bak/
 Thumbs.db
 # Data files (temporary)
 temp_*.csv
-config.bat
+.env
+.env.*
+.env.local
+.env.production
